@@ -114,11 +114,6 @@ struct Events: Identifiable, Codable {
 }
 
 // Model for the top-level JSON structure
-struct EventsResponse: Codable {
-    var rows: [Events]
-}
-
-// Model for the top-level JSON structure
 
 struct EventsView: View {
     @State private var eventList: [Events] = []
