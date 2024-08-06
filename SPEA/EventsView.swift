@@ -91,7 +91,6 @@ struct EventsView_Previews: PreviewProvider {
     }
 }
 */
-
 import SwiftUI
 import Foundation
 
@@ -113,25 +112,38 @@ struct Events: Identifiable, Codable {
     }
 }
 
-// Model for the top-level JSON structure
-
 struct EventsView: View {
     @State private var eventList: [Events] = []
+    @State private var isLoading = true
     
     var body: some View {
         NavigationView {
-            List(eventList) { event in
-                NavigationLink(destination: EventDetailView(event: event)) {
-                    EventRowView(event: event)
+            ZStack {
+                List(eventList) { event in
+                    NavigationLink(destination: EventDetailView(event: event)) {
+                        EventRowView(event: event)
+                    }
+                }
+                .navigationTitle("Events")
+                .onAppear {
+                    loadEvents()
+                }
+                
+                if isLoading {
+                    LoadingView()
+                        .frame(width: 150, height: 150)
+                        .cornerRadius(10)
+                        .shadow(radius: 10)
                 }
             }
-            .navigationTitle("Events")
-            .onAppear {
-                DataService().loadEvents { loadedEvents in
-                    self.eventList = loadedEvents
-                    print("Loaded events: \(loadedEvents)") // Debug print
-                }
-            }
+        }
+    }
+    
+    private func loadEvents() {
+        DataService().loadEvents { loadedEvents in
+            self.eventList = loadedEvents
+            self.isLoading = false  // Hide the loading view once data is loaded
+            print("Loaded events: \(loadedEvents)") // Debug print
         }
     }
 }

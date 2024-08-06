@@ -8,30 +8,45 @@
 import SwiftUI
 
 struct ContentView: View {
+    @State private var isLoading = true
     var body: some View {
-        TabView{
-            FeedView()
-                .tabItem {
-                    Label("Newsletter", systemImage: "newspaper.fill")
-                        .safeAreaPadding(50)
-                }
-            EventsView()
-                .tabItem {
-                    Label("Events", systemImage: "calendar")
-                        .safeAreaPadding(50)
-                }
-            AnnouncementView()
-                .tabItem {
-                    Label("Announcer", systemImage: "megaphone.fill")
-                        .safeAreaPadding(50)
-                }
-            MembershipView()
-                .tabItem {
-                    Label("Membership", systemImage: "person.2.fill")
-                        .safeAreaPadding(50)
-                }
+        ZStack {
+            // Main content view with TabView
+            TabView {
+                FeedView()
+                    .tabItem {
+                        Label("Newsletter", systemImage: "newspaper.fill")
+                    }
+                EventsView()
+                    .tabItem {
+                        Label("Events", systemImage: "calendar")
+                    }
+                AnnouncementView()
+                    .tabItem {
+                        Label("Announcer", systemImage: "megaphone.fill")
+                    }
+                MembershipView()
+                    .tabItem {
+                        Label("Membership", systemImage: "person.2.fill")
+                    }
+            }
+            .opacity(isLoading ? 0 : 1)
+            .accentColor(.red)
+
+            // Loading view
+            if isLoading {
+                AnimatedLoadingView()
+//                    .cornerRadius(10)
+//                    .frame(width: 300, height: 300)
+//                    .shadow(radius: 10)
+            }
         }
-        .accentColor(.red)
+        .onAppear() {
+            // Simulate a network request or some loading task
+            DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
+                self.isLoading = false
+            }
+        }
     }
 }
 

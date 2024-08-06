@@ -78,10 +78,9 @@
  }
  }
  */
-
 import SwiftUI
 
-// Model for individual event data
+// Model for individual announcement data
 struct Announcement: Identifiable, Codable {
     var id = UUID()
     var Ftitle: String
@@ -97,27 +96,39 @@ struct Announcement: Identifiable, Codable {
     }
 }
 
-
 struct AnnouncementView: View {
     @State private var announcementList: [Announcement] = []
-    
+    @State private var isLoading = true
+
     var body: some View {
         NavigationView {
-            List(announcementList) { announcement in
-                NavigationLink(destination: AnnouncementDetailView(announcement: announcement)) {
-                    AnnouncementRowView(announcement: announcement)
+            ZStack {
+                // Main content
+                List(announcementList) { announcement in
+                    NavigationLink(destination: AnnouncementDetailView(announcement: announcement)) {
+                        AnnouncementRowView(announcement: announcement)
+                    }
                 }
-            }
-            .navigationTitle("Announcements")
-            .onAppear {
-                loadAnnouncements()
+                .navigationTitle("Announcements")
+                .onAppear {
+                    loadAnnouncements()
+                }
+
+                // Loading view
+                if isLoading {
+                    LoadingView()
+                        .frame(width: 150, height: 150) // Adjust size as needed
+                        .cornerRadius(10)
+                        .shadow(radius: 10)
+                }
             }
         }
     }
-    
+
     private func loadAnnouncements() {
         DataServiceA().loadAnnouncements { loadedAnnouncements in
             self.announcementList = loadedAnnouncements
+            self.isLoading = false // Hide the loading view once data is loaded
             print("Updated announcement list: \(self.announcementList)") // Debug print
         }
     }

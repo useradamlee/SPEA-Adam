@@ -18,6 +18,53 @@
             endingLineNumber = "22"
             landmarkName = "memberList"
             landmarkType = "24">
+            <Locations>
+               <Location
+                  uuid = "93083E4C-A9DF-443B-9A5A-1F36556BD510 - de96f27ad44063e5"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "property wrapper backing initializer of SPEA.MembershipView.settingsDetent : SwiftUI.PresentationDetent"
+                  moduleName = "SPEA"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/Javius/Documents/GitHub/SPEA/SPEA/MembershipView.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "23"
+                  endingLineNumber = "23"
+                  offsetFromSymbolStart = "0">
+               </Location>
+               <Location
+                  uuid = "93083E4C-A9DF-443B-9A5A-1F36556BD510 - 7d61c4ad5c2e096c"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "SPEA.MembershipView.init(memberList: Swift.Array&lt;SPEA.Membership&gt;) -&gt; SPEA.MembershipView"
+                  moduleName = "SPEA"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/Javius/Documents/GitHub/SPEA/SPEA/MembershipView.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "23"
+                  endingLineNumber = "23"
+                  offsetFromSymbolStart = "344">
+               </Location>
+               <Location
+                  uuid = "93083E4C-A9DF-443B-9A5A-1F36556BD510 - 7d61c4ad5c2e096c"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "SPEA.MembershipView.init(memberList: Swift.Array&lt;SPEA.Membership&gt;) -&gt; SPEA.MembershipView"
+                  moduleName = "SPEA"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/Javius/Documents/GitHub/SPEA/SPEA/MembershipView.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "23"
+                  endingLineNumber = "23"
+                  offsetFromSymbolStart = "264">
+               </Location>
+            </Locations>
          </BreakpointContent>
       </BreakpointProxy>
    </Breakpoints>
