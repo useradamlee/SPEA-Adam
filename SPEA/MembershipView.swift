@@ -1,59 +1,77 @@
-//
-//  MembershipView.swift
-//  SPEA
-//
-//  Created by Javius Loh on 30/5/24.
-//
-
 import SwiftUI
+import Kingfisher
 
-struct Membership: Identifiable {
+struct Membership: Identifiable, Codable {
     var id = UUID()
     var name: String
-    var valid: String
+    var validity: String
     var details: String
     var logo: String
+    
+    enum CodingKeys: String, CodingKey {
+        case name
+        case validity
+        case details
+        case logo
+    }
 }
 
 struct MembershipView: View {
-        
-    @State var memberList = [
-        Membership(name: "Chiropractic Health & Wellness Clinic", valid: "- Valid until 31 December 2024", details: "- One time $54.00 discount on their first consultation visit", logo: "ChiropracticHealth&Wellness")
-    ]
+    @StateObject private var viewModel = MembershipViewModel()
     @State private var settingsDetent = PresentationDetent.medium
-    @State private var showingMembership = false
-    
     @State private var memberSelected: Membership? = nil
 
     var body: some View {
-        NavigationStack{
-            List {
-                ForEach(memberList, id: \.id) { member in
-                    Button{
+        NavigationStack {
+            ZStack {
+                // Main content
+                List(viewModel.memberList) { member in
+                    Button {
                         memberSelected = member
-                    } label:{
-                        HStack{
-                            VStack(alignment: .leading){
-                                Image(member.logo)
-                                    .resizable()
-                                    .scaledToFit()
-                                    .frame(maxWidth: .infinity)
-                                    .clipShape(RoundedRectangle(cornerSize: CGSize(width: 20, height: 10)))
-                            }
+                    } label: {
+                        HStack {
+                            KFImage(URL(string: member.logo))
+                                .resizable()
+                                .placeholder {
+                                    Image(systemName: "photo")
+                                        .resizable()
+                                        .scaledToFit()
+                                        .frame(maxWidth: .infinity)
+                                        .clipShape(RoundedRectangle(cornerSize: CGSize(width: 20, height: 10)))
+                                }
+                                .onSuccess { result in
+                                    print("Image loaded successfully: \(result.cacheType)")
+                                }
+                                .onFailure { error in
+                                    print("Failed to load image: \(error.localizedDescription)")
+                                }
+                                .cacheMemoryOnly(false)
+                                .fade(duration: 0.5)
+                                .scaledToFit()
+                                .frame(maxWidth: .infinity)
+                                .clipShape(RoundedRectangle(cornerSize: CGSize(width: 20, height: 10)))
                         }
+                    }
+                }
+                .opacity(viewModel.isLoading ? 0 : 1) // Hide list while loading
+
+                // Loading view
+                if viewModel.isLoading {
+                    VStack {
+                        SmallAnimatedLoadingView()
                     }
                 }
             }
             .navigationTitle("Membership")
             .sheet(item: $memberSelected) { member in
-                VStack(alignment: .leading){
+                VStack(alignment: .leading) {
                     Spacer()
                     Text(member.name)
                         .font(.largeTitle)
                         .fontWeight(.bold)
                         .padding()
                     Divider()
-                    Text(member.valid)
+                    Text(member.validity)
                         .padding()
                     Text(member.details)
                         .padding()
