@@ -92,7 +92,6 @@ struct EventsView_Previews: PreviewProvider {
 }
 */
 import SwiftUI
-import Foundation
 
 // Model for individual event data
 struct Events: Identifiable, Codable {
@@ -130,10 +129,8 @@ struct EventsView: View {
                 }
                 
                 if isLoading {
-                    LoadingView()
-                        .frame(width: 150, height: 150)
+                    SmallAnimatedLoadingView()                        .frame(width: 250, height: 200)
                         .cornerRadius(10)
-                        .shadow(radius: 10)
                 }
             }
         }

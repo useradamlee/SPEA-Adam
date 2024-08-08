@@ -2,10 +2,10 @@ import SwiftUI
 
 extension Color {
     // Initialize a Color using a hex code string
-    init(hex: String) {
+    init?(hex: String) {
         let hex = hex.trimmingCharacters(in: .whitespacesAndNewlines).uppercased()
         var rgb: UInt64 = 0
-        Scanner(string: hex).scanHexInt64(&rgb)
+        guard Scanner(string: hex).scanHexInt64(&rgb) else { return nil }
         
         let red = Double((rgb >> 16) & 0xFF) / 255.0
         let green = Double((rgb >> 8) & 0xFF) / 255.0
@@ -17,19 +17,17 @@ extension Color {
 
 struct LoadingView: View {
     @State private var rotation: Double = 0.0
-    let circleRadius: CGFloat = 60.0  // Radius of the dotted circle around the image
-    let numberOfCircles: Int = 12  // Number of circles
-    let animationDuration: Double = 2.0  // Slower animation duration
-    let circleColor = Color(hex: "cccccc")  // Circle color with hex code
+    private let circleRadius: CGFloat = 60.0  // Radius of the dotted circle around the image
+    private let numberOfCircles: Int = 12  // Number of circles
+    private let animationDuration: Double = 2.0  // Slower animation duration
+    private let circleColor = Color(hex: "cccccc") ?? .gray  // Circle color with hex code
 
     var body: some View {
         ZStack {
-            // Ensure the entire ZStack has a clear background
             Color.clear
                 .edgesIgnoringSafeArea(.all)
             
-            // Main image
-            Image("SPEA") // Use the actual name of your image
+            Image("SPEA")
                 .resizable()
                 .aspectRatio(contentMode: .fit)
                 .frame(width: 100, height: 100)  // Image size
@@ -38,9 +36,7 @@ struct LoadingView: View {
                         let size = min(geometry.size.width, geometry.size.height)
                         let center = CGPoint(x: size / 2, y: size / 2)
                         
-                        // Create a container view to apply rotation
                         ZStack {
-                            // Create multiple moving circles
                             ForEach(0..<numberOfCircles, id: \.self) { index in
                                 let angle = Double(index) * (360.0 / Double(numberOfCircles))
                                 let radians = angle * .pi / 180
@@ -55,12 +51,12 @@ struct LoadingView: View {
                         }
                         .rotationEffect(.degrees(rotation))
                         .animation(
-                            Animation.linear(duration: animationDuration) // Animation duration
-                                .repeatForever(autoreverses: false)
+                            .linear(duration: animationDuration)
+                                .repeatForever(autoreverses: false),
+                            value: rotation
                         )
                         .onAppear {
-                            // Start rotation when view appears
-                            self.rotation = 360
+                            rotation = 360
                         }
                         .frame(width: 150, height: 150)  // Frame size
                         .position(center)  // Position the container at the center of the image

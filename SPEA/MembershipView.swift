@@ -1,41 +1,55 @@
-//
-//  MembershipView.swift
-//  SPEA
-//
-//  Created by Javius Loh on 30/5/24.
-//
-
 import SwiftUI
+import Kingfisher
 
-struct Membership: Identifiable {
+struct Membership: Identifiable, Codable {
     var id = UUID()
     var name: String
-    var valid: String
+    var validity: String
     var details: String
     var logo: String
+
+    enum CodingKeys: String, CodingKey {
+        case name
+        case validity
+        case details
+        case logo
+    }
 }
 
 struct MembershipView: View {
-        
-    @State var memberList = [
-        Membership(name: "Chiropractic Health & Wellness Clinic", valid: "- Valid until 31 December 2024", details: "- One time $54.00 discount on their first consultation visit", logo: "ChiropracticHealth&Wellness")
-    ]
+    @State var memberList: [Membership] = []
     @State private var settingsDetent = PresentationDetent.medium
-    @State private var showingMembership = false
-    
     @State private var memberSelected: Membership? = nil
+    @State private var isLoading = true
+
+    private let membershipService = MembershipService()
 
     var body: some View {
-        NavigationStack{
-            List {
-                ForEach(memberList, id: \.id) { member in
-                    Button{
-                        memberSelected = member
-                    } label:{
-                        HStack{
-                            VStack(alignment: .leading){
-                                Image(member.logo)
+        NavigationStack {
+            ZStack {
+                List {
+                    ForEach(memberList) { member in
+                        Button {
+                            memberSelected = member
+                        } label: {
+                            HStack {
+                                KFImage(URL(string: member.logo))
                                     .resizable()
+                                    .placeholder {
+                                        Image(systemName: "photo")
+                                            .resizable()
+                                            .scaledToFit()
+                                            .frame(maxWidth: .infinity)
+                                            .clipShape(RoundedRectangle(cornerSize: CGSize(width: 20, height: 10)))
+                                    }
+                                    .onSuccess { result in
+                                        print("Image loaded successfully: \(result.cacheType)")
+                                    }
+                                    .onFailure { error in
+                                        print("Failed to load image: \(error.localizedDescription)")
+                                    }
+                                    .cacheMemoryOnly(false)
+                                    .fade(duration: 0.5)
                                     .scaledToFit()
                                     .frame(maxWidth: .infinity)
                                     .clipShape(RoundedRectangle(cornerSize: CGSize(width: 20, height: 10)))
@@ -43,17 +57,24 @@ struct MembershipView: View {
                         }
                     }
                 }
+                .opacity(isLoading ? 0 : 1) // Hide list while loading
+
+                if isLoading {
+                    VStack {
+                        SmallAnimatedLoadingView()
+                    }
+                }
             }
             .navigationTitle("Membership")
             .sheet(item: $memberSelected) { member in
-                VStack(alignment: .leading){
+                VStack(alignment: .leading) {
                     Spacer()
                     Text(member.name)
                         .font(.largeTitle)
                         .fontWeight(.bold)
                         .padding()
                     Divider()
-                    Text(member.valid)
+                    Text(member.validity)
                         .padding()
                     Text(member.details)
                         .padding()
@@ -63,6 +84,14 @@ struct MembershipView: View {
                     [.medium, .large],
                     selection: $settingsDetent
                 )
+            }
+            .onAppear {
+                membershipService.loadMemberships { memberships in
+                    self.memberList = memberships
+                    withAnimation {
+                        self.isLoading = false // Hide loading indicator with animation
+                    }
+                }
             }
         }
     }

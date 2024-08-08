@@ -116,10 +116,8 @@ struct AnnouncementView: View {
 
                 // Loading view
                 if isLoading {
-                    LoadingView()
-                        .frame(width: 150, height: 150) // Adjust size as needed
+                    SmallAnimatedLoadingView()                        .frame(width: 250, height: 200) // Adjust size as needed
                         .cornerRadius(10)
-                        .shadow(radius: 10)
                 }
             }
         }
