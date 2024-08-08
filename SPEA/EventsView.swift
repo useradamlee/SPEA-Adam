@@ -125,12 +125,13 @@ struct EventsView: View {
                 List(viewModel.eventList) { event in
                     NavigationLink(destination: EventDetailView(event: event)) {
                         EventRowView(event: event)
+
                     }
                 }
                 .navigationTitle("Events")
                 
                 if viewModel.isLoading {
-                    SmallAnimatedLoadingView()
+                    LoadingView()
                         .frame(width: 250, height: 200)
                         .cornerRadius(10)
                 }

@@ -22,6 +22,7 @@ class EventViewModel: ObservableObject {
             self?.eventList = loadedEvents
             self?.isLoading = false  // Hide the loading view once data is loaded
             print("Updated event list: \(self?.eventList ?? [])") // Debug print
+            self?.eventList.reverse()
         }
     }
 }

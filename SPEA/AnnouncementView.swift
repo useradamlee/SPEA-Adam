@@ -112,7 +112,7 @@ struct AnnouncementView: View {
                 
                 // Loading view
                 if viewModel.isLoading {
-                    SmallAnimatedLoadingView()
+                    LoadingView()
                         .frame(width: 250, height: 200) // Adjust size as needed
                         .cornerRadius(10)
                 }

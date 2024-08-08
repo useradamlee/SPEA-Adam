@@ -33,11 +33,12 @@ struct MembershipView: View {
                             KFImage(URL(string: member.logo))
                                 .resizable()
                                 .placeholder {
-                                    Image(systemName: "photo")
-                                        .resizable()
-                                        .scaledToFit()
-                                        .frame(maxWidth: .infinity)
-                                        .clipShape(RoundedRectangle(cornerSize: CGSize(width: 20, height: 10)))
+                                    LoadingView()
+//                                    Image("SPEA")
+//                                        .resizable()
+//                                        .scaledToFit()
+//                                        .frame(maxWidth: .infinity)
+//                                        .clipShape(RoundedRectangle(cornerSize: CGSize(width: 20, height: 10)))
                                 }
                                 .onSuccess { result in
                                     print("Image loaded successfully: \(result.cacheType)")
@@ -58,7 +59,7 @@ struct MembershipView: View {
                 // Loading view
                 if viewModel.isLoading {
                     VStack {
-                        SmallAnimatedLoadingView()
+                        LoadingView()
                     }
                 }
             }

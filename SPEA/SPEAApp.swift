@@ -10,7 +10,6 @@ import FirebaseCore
 import FirebaseMessaging
 import UserNotifications
 import SwiftUI
-
 final class AppDelegate: NSObject, UIApplicationDelegate {
     func application(
         _ application: UIApplication,
