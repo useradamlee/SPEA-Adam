@@ -97,37 +97,26 @@ struct Announcement: Identifiable, Codable {
 }
 
 struct AnnouncementView: View {
-    @State private var announcementList: [Announcement] = []
-    @State private var isLoading = true
-
+    @StateObject private var viewModel = AnnouncementViewModel()
+    
     var body: some View {
         NavigationView {
             ZStack {
                 // Main content
-                List(announcementList) { announcement in
+                List(viewModel.announcementList) { announcement in
                     NavigationLink(destination: AnnouncementDetailView(announcement: announcement)) {
                         AnnouncementRowView(announcement: announcement)
                     }
                 }
                 .navigationTitle("Announcements")
-                .onAppear {
-                    loadAnnouncements()
-                }
-
+                
                 // Loading view
-                if isLoading {
-                    SmallAnimatedLoadingView()                        .frame(width: 250, height: 200) // Adjust size as needed
+                if viewModel.isLoading {
+                    SmallAnimatedLoadingView()
+                        .frame(width: 250, height: 200) // Adjust size as needed
                         .cornerRadius(10)
                 }
             }
-        }
-    }
-
-    private func loadAnnouncements() {
-        DataServiceA().loadAnnouncements { loadedAnnouncements in
-            self.announcementList = loadedAnnouncements
-            self.isLoading = false // Hide the loading view once data is loaded
-            print("Updated announcement list: \(self.announcementList)") // Debug print
         }
     }
 }
@@ -173,8 +162,8 @@ struct AnnouncementDetailView: View {
     }
 }
 
-struct AnnouncementView_Previews: PreviewProvider {
-    static var previews: some View {
-        AnnouncementView()
-    }
+#Preview {
+    AnnouncementView()
+        .previewLayout(.sizeThatFits)
+        .environment(\.sizeCategory, .large)
 }

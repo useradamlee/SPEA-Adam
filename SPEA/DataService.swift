@@ -1,43 +1,43 @@
 import Foundation
 
-class DataService {
-    let apiUrl = "https://gsx2json.com/api?id=1OUhMffoZRSuP0sHqZrGplArwLvZRGowadJe1CclIYug&"
+class EventDataService {
+    let apiUrl = "https://script.google.com/macros/s/AKfycbzU0bwOFEvgm2ZoTctAn_mMcrd-AHI6mxlzBcpIkuAejUaix_NhGJ5Bk5CUfj-qi9za/exec"
     let jsonDecoder = JSONDecoder()
-
-    func loadEvents(completion: @escaping ([Events]) -> Void) {
-        loadAnnouncements(from: "Event", completion: completion)
-    }
-
-    func loadAnnouncements(completion: @escaping ([Events]) -> Void) {
-        loadAnnouncements(from: "Announcements", completion: completion)
-    }
-
-    private func loadAnnouncements(from sheet: String, completion: @escaping ([Events]) -> Void) {
-        guard let url = URL(string: apiUrl + "sheet=" + sheet) else {
+    
+    func loadEvents(completion: @escaping ([Event]) -> Void) {
+        guard let url = URL(string: apiUrl) else {
             print("Invalid URL")
             completion([])
             return
         }
-
+        
+        // Load cached data if available
+        if let cachedEventsData = UserDefaults.standard.data(forKey: "cachedEvents"),
+           let cachedEvents = try? jsonDecoder.decode([Event].self, from: cachedEventsData) {
+            completion(cachedEvents)
+        }
+        
         URLSession.shared.dataTask(with: url) { data, response, error in
             if let error = error {
                 print("Error fetching data: \(error)")
                 completion([])
                 return
             }
-
+            
             guard let data = data else {
                 print("No data returned")
                 completion([])
                 return
             }
-
+            
             do {
-                let eventdata = try self.jsonDecoder.decode(EventsResponse.self, from: data)
-                let Event = eventdata.rows
-                print("Successfully fetched and decoded data: \(Event)") // Debug print
+                let events = try self.jsonDecoder.decode([Event].self, from: data)
                 DispatchQueue.main.async {
-                    completion(Event)
+                    // Cache the events data
+                    if let encodedEvents = try? JSONEncoder().encode(events) {
+                        UserDefaults.standard.set(encodedEvents, forKey: "cachedEvents")
+                    }
+                    completion(events)
                 }
             } catch {
                 print("Error decoding JSON: \(error)")
@@ -45,9 +45,4 @@ class DataService {
             }
         }.resume()
     }
-}
-
-// Model for the top-level JSON structure
-struct EventsResponse: Codable {
-    let rows: [Events]
 }

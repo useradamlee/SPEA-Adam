@@ -92,15 +92,18 @@ struct EventsView_Previews: PreviewProvider {
 }
 */
 import SwiftUI
+import Kingfisher
 
-// Model for individual event data
-struct Events: Identifiable, Codable {
+// Model for the event structure
+struct Event: Identifiable, Codable {
     var id = UUID()
     var Ftitle: String
     var icon: String
     var dates: String
     var time: String
     var venue: String
+    var image: String
+    var imageVersion: String? // Optional versioning for image
     
     enum CodingKeys: String, CodingKey {
         case Ftitle
@@ -108,45 +111,36 @@ struct Events: Identifiable, Codable {
         case dates
         case time
         case venue
+        case image
+        case imageVersion
     }
 }
 
 struct EventsView: View {
-    @State private var eventList: [Events] = []
-    @State private var isLoading = true
+    @StateObject private var viewModel = EventViewModel()
     
     var body: some View {
         NavigationView {
             ZStack {
-                List(eventList) { event in
+                List(viewModel.eventList) { event in
                     NavigationLink(destination: EventDetailView(event: event)) {
                         EventRowView(event: event)
                     }
                 }
                 .navigationTitle("Events")
-                .onAppear {
-                    loadEvents()
-                }
                 
-                if isLoading {
-                    SmallAnimatedLoadingView()                        .frame(width: 250, height: 200)
+                if viewModel.isLoading {
+                    SmallAnimatedLoadingView()
+                        .frame(width: 250, height: 200)
                         .cornerRadius(10)
                 }
             }
         }
     }
-    
-    private func loadEvents() {
-        DataService().loadEvents { loadedEvents in
-            self.eventList = loadedEvents
-            self.isLoading = false  // Hide the loading view once data is loaded
-            print("Loaded events: \(loadedEvents)") // Debug print
-        }
-    }
 }
 
 struct EventRowView: View {
-    var event: Events
+    var event: Event
     
     var body: some View {
         HStack {
@@ -164,31 +158,81 @@ struct EventRowView: View {
 }
 
 struct EventDetailView: View {
-    var event: Events
+    var event: Event
     
     var body: some View {
-        VStack {
-            Text(event.Ftitle)
-                .font(.title)
-                .fontWeight(.bold)
-                .multilineTextAlignment(.center)
-            
-            Divider()
-            
-            VStack(alignment: .leading) {
-                Text("Date: \(event.dates)")
-                Text("Time: \(event.time)")
-                Text("Venue: \(event.venue)")
+        ScrollView {
+            VStack {
+                Text(event.Ftitle)
+                    .font(.title)
+                    .fontWeight(.bold)
+
+                Divider()
+                VStack(alignment: .leading) {
+                    HStack {
+                        Text("Date:")
+                            .fontWeight(.bold)
+                        Text("\(event.dates)")
+                    }
+                    HStack {
+                        Text("Time:")
+                            .fontWeight(.bold)
+                        Text("\(event.time)")
+                    }
+                    HStack {
+                        Text("Venue:")
+                            .fontWeight(.bold)
+                        Text("\(event.venue)")
+                    }
+                }
+                .padding()
+
+                if let imageUrl = constructImageUrl(event: event) {
+                    ZStack {
+                        KFImage(imageUrl)
+                            .resizable()
+                            .placeholder {
+                                ProgressView()
+                            }
+                            .cacheOriginalImage()
+                            .setProcessor(DownsamplingImageProcessor(size: CGSize(width: 600, height: 400)))
+                            .onSuccess { result in
+                                print("Successfully loaded image: \(result)")
+                            }
+                            .onFailure { error in
+                                print("Failed to load image: \(error)")
+                            }
+                            .aspectRatio(contentMode: .fit)
+                            .frame(maxWidth: .infinity, maxHeight: 400)
+                    }
+                    .cornerRadius(10) // Apply rounded corners to the outer container
+                    .padding()
+                } else {
+                    Text("Invalid URL")
+                }
+                Spacer()
             }
-            
-            Spacer()
+            .padding()
         }
-        .padding()
+    }
+    
+    private func constructImageUrl(event: Event) -> URL? {
+        var imageUrlString = event.image
+        if let version = event.imageVersion {
+            imageUrlString += "?version=\(version)"
+        }
+        return URL(string: imageUrlString)
     }
 }
 
-struct EventsView_Previews: PreviewProvider {
-    static var previews: some View {
-        EventsView()
-    }
+#Preview {
+    EventsView()
+        .previewLayout(.sizeThatFits)
+        .environment(\.sizeCategory, .large)
+}
+
+#Preview {
+    EventDetailView(event: Event(Ftitle: "Sample Event", icon: "star.fill", dates: "12 July 2024", time: "4pm - 5pm", venue: "Zoom (Online)", image: "https://example.com/image.png"))
+        .previewLayout(.sizeThatFits)
+        .environment(\.sizeCategory, .large)
 }
