@@ -36,9 +36,6 @@ struct ContentView: View {
             // Loading view
             if isLoading {
                 AnimatedLoadingView()
-//                    .cornerRadius(10)
-//                    .frame(width: 300, height: 300)
-//                    .shadow(radius: 10)
             }
         }
         .onAppear() {

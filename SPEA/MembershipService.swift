@@ -1,10 +1,10 @@
 import Foundation
 
-class EventDataService {
-    let apiUrl = "https://script.google.com/macros/s/AKfycbzU0bwOFEvgm2ZoTctAn_mMcrd-AHI6mxlzBcpIkuAejUaix_NhGJ5Bk5CUfj-qi9za/exec"
+class MembershipService {
+    let apiUrl = "https://script.google.com/macros/s/AKfycbwQl8MEJeRJIt4LGclG2-z7Fz3vJpeZCz2MQqqLOuXldRY4hEfVxbPHAb7mDsf0rI-n/exec"
     let jsonDecoder = JSONDecoder()
     
-    func loadEvents(completion: @escaping ([Event]) -> Void) {
+    func loadMemberships(completion: @escaping ([Membership]) -> Void) {
         guard let url = URL(string: apiUrl) else {
             print("Invalid URL")
             completion([])
@@ -12,9 +12,9 @@ class EventDataService {
         }
         
         // Load cached data if available
-        if let cachedEventsData = UserDefaults.standard.data(forKey: "cachedEvents"),
-           let cachedEvents = try? jsonDecoder.decode([Event].self, from: cachedEventsData) {
-            completion(cachedEvents)
+        if let cachedMembershipsData = UserDefaults.standard.data(forKey: "cachedMemberships"),
+           let cachedMemberships = try? jsonDecoder.decode([Membership].self, from: cachedMembershipsData) {
+            completion(cachedMemberships)
         }
         
         URLSession.shared.dataTask(with: url) { data, response, error in
@@ -31,13 +31,13 @@ class EventDataService {
             }
             
             do {
-                let events = try self.jsonDecoder.decode([Event].self, from: data)
+                let memberships = try self.jsonDecoder.decode([Membership].self, from: data)
                 DispatchQueue.main.async {
-                    // Cache the events data
-                    if let encodedEvents = try? JSONEncoder().encode(events) {
-                        UserDefaults.standard.set(encodedEvents, forKey: "cachedEvents")
+                    // Cache the memberships data
+                    if let encodedMemberships = try? JSONEncoder().encode(memberships) {
+                        UserDefaults.standard.set(encodedMemberships, forKey: "cachedMemberships")
                     }
-                    completion(events)
+                    completion(memberships)
                 }
             } catch {
                 print("Error decoding JSON: \(error)")
