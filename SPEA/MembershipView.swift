@@ -59,7 +59,7 @@ struct MembershipView: View {
                 // Loading view
                 if viewModel.isLoading {
                     VStack {
-                        LoadingView()
+                        SmallAnimatedLoadingView()
                     }
                 }
             }

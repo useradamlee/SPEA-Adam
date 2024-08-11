@@ -35,7 +35,7 @@ struct ContentView: View {
 
             // Loading view
             if isLoading {
-                AnimatedLoadingView()
+                SmallAnimatedLoadingView()
             }
         }
         .onAppear() {

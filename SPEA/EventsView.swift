@@ -131,7 +131,7 @@ struct EventsView: View {
                 .navigationTitle("Events")
                 
                 if viewModel.isLoading {
-                    LoadingView()
+                    SmallAnimatedLoadingView()
                         .frame(width: 250, height: 200)
                         .cornerRadius(10)
                 }
