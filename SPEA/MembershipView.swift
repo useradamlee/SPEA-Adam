@@ -52,7 +52,7 @@ struct MembershipView: View {
                             member: Membership(
                                 name: "\(membershipTypeBinding.wrappedValue.rawValue.capitalized) Membership",
                                 validity: "Valid Until: \(formattedDate(expiryDate))",
-                                details: "Access to benefits        Type: \(membershipTypeBinding.wrappedValue.rawValue.capitalized)",
+                                details: "Access to benefits.    Type: \(membershipTypeBinding.wrappedValue.rawValue.capitalized)",
                                 logo:"https://i.postimg.cc/RhNBVsck/SPEA.png"
                             )
                         )
@@ -62,7 +62,7 @@ struct MembershipView: View {
                             member: Membership(
                                 name: "\(membershipTypeBinding.wrappedValue.rawValue.capitalized) Membership",
                                 validity: "Lifetime Access",
-                                details: "Access to benefits        Type: \(membershipTypeBinding.wrappedValue.rawValue.capitalized)",
+                                details: "Access to benefits.    Type: \(membershipTypeBinding.wrappedValue.rawValue.capitalized)",
                                 logo:"https://i.postimg.cc/RhNBVsck/SPEA.png"
                             )
                         )
@@ -278,7 +278,7 @@ struct MembershipCardView: View {
 
 #Preview {
     MembershipCardView(member: Membership(
-        name: "Student Membership",
+        name: "Gold Membership",
         validity: "Valid Until: Aug 15, 2025",
         details: "Access to premium features and more benefits.",
         logo: "https://i.postimg.cc/RhNBVsck/SPEA.png"
