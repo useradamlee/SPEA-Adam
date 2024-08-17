@@ -8,8 +8,16 @@
 import Foundation
 
 class MembershipViewModel: ObservableObject {
+    
     @Published var memberList: [Membership] = []
     @Published var isLoading = true
+    
+    // Add the missing properties
+    @Published var membershipName: String = ""
+    @Published var membershipValidity: String = ""
+    @Published var membershipDetails: String = ""
+    @Published var membershipLogo: String = ""
+    
     private var membershipService: MembershipService
     
     init(membershipService: MembershipService = MembershipService()) {
@@ -25,3 +33,4 @@ class MembershipViewModel: ObservableObject {
         }
     }
 }
+
