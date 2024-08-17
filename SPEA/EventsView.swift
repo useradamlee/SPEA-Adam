@@ -118,18 +118,30 @@ struct Event: Identifiable, Codable {
 
 struct EventsView: View {
     @StateObject private var viewModel = EventViewModel()
-    
+    @StateObject private var networkMonitor = NetworkMonitor() //Monitor network status
+
     var body: some View {
         NavigationView {
-            ZStack {
+            VStack {
+                // Show offline alert if there's no internet connection
+                if !networkMonitor.isConnected {
+                    Text("You are offline. Content may not be up to date.")
+                        .font(.footnote)
+                        .foregroundColor(.red)
+                        .padding(.vertical, 4)
+                        .frame(maxWidth: .infinity)
+                        .background(Color.yellow.opacity(0.2))
+                }
+                
+                // Event list with navigation links
                 List(viewModel.eventList) { event in
                     NavigationLink(destination: EventDetailView(event: event)) {
                         EventRowView(event: event)
-
                     }
                 }
                 .navigationTitle("Events")
                 
+                // Loading view overlay
                 if viewModel.isLoading {
                     SmallAnimatedLoadingView()
                         .frame(width: 250, height: 200)

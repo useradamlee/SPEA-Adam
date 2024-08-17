@@ -98,28 +98,35 @@ struct Announcement: Identifiable, Codable {
 
 struct AnnouncementView: View {
     @StateObject private var viewModel = AnnouncementViewModel()
-    
+    @StateObject private var networkMonitor = NetworkMonitor()
     var body: some View {
-        NavigationView {
-            ZStack {
-                // Main content
-                List(viewModel.announcementList) { announcement in
-                    NavigationLink(destination: AnnouncementDetailView(announcement: announcement)) {
-                        AnnouncementRowView(announcement: announcement)
+            NavigationView {
+                VStack {
+                    if !networkMonitor.isConnected {
+                        Text("You are offline. Content may not be up to date.")
+                            .font(.footnote)
+                            .foregroundColor(.red)
+                            .padding(.vertical, 4)
+                            .frame(maxWidth: .infinity)
+                            .background(Color.yellow.opacity(0.2))
                     }
-                }
-                .navigationTitle("Announcements")
-                
-                // Loading view
-                if viewModel.isLoading {
-                    SmallAnimatedLoadingView()
-                        .frame(width: 250, height: 200) // Adjust size as needed
-                        .cornerRadius(10)
+                    
+                    List(viewModel.announcementList) { announcement in
+                        NavigationLink(destination: AnnouncementDetailView(announcement: announcement)) {
+                            AnnouncementRowView(announcement: announcement)
+                        }
+                    }
+                    .navigationTitle("Announcements")
+                    
+                    if viewModel.isLoading {
+                        SmallAnimatedLoadingView()
+                            .frame(width: 250, height: 200)
+                            .cornerRadius(10)
+                    }
                 }
             }
         }
     }
-}
 
 struct AnnouncementRowView: View {
     var announcement: Announcement
