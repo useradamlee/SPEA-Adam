@@ -5,7 +5,6 @@ If the person says yes, a membership detail will pop up, and the user will be as
 Once that is over, users will see a membership card with all the details when they go to the membership section. If the membership closes to expiration, it will notify the user to renew their membership.
 If the person says no, they will just be directed to the app's main page. With the option of recording down information if they choose to become a member
 
-![SPEA-App-Newsletters](https://github.com/user-attachments/assets/340fb2b8-fe94-4f9f-969f-9cd9a7622144)
 
 2. **Newsletters:** 
 This is relatively simple; there will be a view with previews of newsletters, and when the user presses it, it will link the user to the website. All of the data is stored locally.
