@@ -44,13 +44,11 @@ struct FirstTimeLaunchView: View {
                 Button(action: {
                     showMemberSignUp = true
                 }) {
-                    Text("Yes, I am a member")
+                    Text("Yes")
                         .frame(maxWidth: .infinity)
-                        .padding()
-                        .background(Color.red)
-                        .foregroundColor(.white)
-                        .cornerRadius(10)
                 }
+                .buttonStyle(.borderedProminent)
+                .controlSize(.large)
                 .font(.system(size: 20, weight: .bold))
 
                 Button(action: {
@@ -59,12 +57,10 @@ struct FirstTimeLaunchView: View {
                 }) {
                     Text("No, I just want updates")
                         .frame(maxWidth: .infinity)
-                        .padding()
-                        .background(Color.gray)
-                        .foregroundColor(.white)
-                        .cornerRadius(10)
                 }
-                .font(.system(size: 20, weight: .bold))
+                .buttonStyle(.bordered)
+                .controlSize(.large)
+                .font(.system(size: 20))
             }
             .padding(.horizontal, 40)
         }
