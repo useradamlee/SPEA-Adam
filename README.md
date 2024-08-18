@@ -22,3 +22,16 @@ It will cache the data for the text and the image.
 It caches the images through [KingFisher](https://github.com/onevcat/Kingfisher), firstly, the images are web-hosted and the direct link is put in the Google sheet. After all the processes, the app will get the images through the links, cache it and store it.
 
 Lastly, if the content gets updated, the app will get rid of the changed content and fit the new one in
+
+## Feature implementation
+- [x] Remote changes for events
+- [x] Remote changes for announcements
+- [x] Remote changes for membership benefits
+- [x] membership management (expiry date tracking, notifications, etc.)
+- [x] push notifications
+- [x] offline access
+- [ ] sections of the newsletter in the app
+- [ ] remote changes for newsletter
+- [ ] home screen for app
+- [ ] walkthrough of app
+- [ ] android version
