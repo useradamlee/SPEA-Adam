@@ -24,9 +24,9 @@ It caches the images through [KingFisher](https://github.com/onevcat/Kingfisher)
 Lastly, if the content gets updated, the app will get rid of the changed content and fit the new one in
 
 ## Feature implementation
-- [x] Remote changes for events
-- [x] Remote changes for announcements
-- [x] Remote changes for membership benefits
+- [x] Remote updates for events
+- [x] Remote updates for announcements
+- [x] Remote updates for membership benefits
 - [x] membership management (expiry date tracking, notifications, etc.)
 - [x] push notifications
 - [x] offline access
