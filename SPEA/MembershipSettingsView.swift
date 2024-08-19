@@ -49,6 +49,7 @@ struct MembershipSettingsView: View {
             .scaleEffect(isSavePressed ? 1.1 : 1.0)
             .animation(.easeInOut, value: isSavePressed)
             .padding()
+            .fontWeight(.bold)
             .foregroundColor(.red)
             .accessibility(label: Text("Complete Sign-Up"))
 

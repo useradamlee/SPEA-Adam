@@ -47,6 +47,7 @@ struct FirstTimeLaunchView: View {
                     Text("Yes")
                         .frame(maxWidth: .infinity)
                 }
+                .accessibility(label: Text("Yes"))
                 .buttonStyle(.borderedProminent)
                 .controlSize(.large)
                 .font(.system(size: 20, weight: .bold))
@@ -58,6 +59,7 @@ struct FirstTimeLaunchView: View {
                     Text("No, I just want updates")
                         .frame(maxWidth: .infinity)
                 }
+                .accessibility(label: Text("No, I just want updates"))
                 .buttonStyle(.bordered)
                 .controlSize(.large)
                 .font(.system(size: 20))

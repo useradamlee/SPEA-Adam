@@ -71,7 +71,9 @@ struct MembershipView: View {
             .navigationTitle("Membership")
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
-                    Button { showingSettings = true } label: { Image(systemName: "gearshape") }
+                    Button { showingSettings = true } label: {
+                        Image(systemName: "gearshape") }
+                    .accessibility(label: Text("Membership Settings"))
                 }
             }
             .sheet(isPresented: $showingSettings) {
