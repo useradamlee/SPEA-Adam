@@ -26,20 +26,18 @@ struct MembershipView: View {
 
     @State private var signUpDate = Date()
 
-    private var membershipTypeBinding: Binding<MembershipType> {
-        Binding(
-            get: { MembershipType(rawValue: self.membershipTypeRaw) ?? .student },
-            set: { self.membershipTypeRaw = $0.rawValue }
-        )
+    private var membershipType: MembershipType {
+        get { MembershipType(rawValue: membershipTypeRaw) ?? .student }
+        set { membershipTypeRaw = newValue.rawValue }
     }
 
-    var membershipExpiryDate: Date? {
+    private var membershipExpiryDate: Date? {
         get {
             guard !membershipExpiryDateString.isEmpty else { return nil }
             return ISO8601DateFormatter().date(from: membershipExpiryDateString)
         }
         set {
-            membershipExpiryDateString = newValue != nil ? ISO8601DateFormatter().string(from: newValue!) : ""
+            membershipExpiryDateString = newValue.map { ISO8601DateFormatter().string(from: $0) } ?? ""
         }
     }
 
@@ -47,60 +45,24 @@ struct MembershipView: View {
         NavigationStack {
             ZStack {
                 VStack {
-                    if isMember, let expiryDate = membershipExpiryDate, membershipTypeBinding.wrappedValue != .lifetime, expiryDate >= Date() {
-                        MembershipCardView(
-                            member: Membership(
-                                name: "\(membershipTypeBinding.wrappedValue.rawValue.capitalized) Membership",
-                                validity: "Valid Until: \(formattedDate(expiryDate))",
-                                details: "Access to benefits.    Type: \(membershipTypeBinding.wrappedValue.rawValue.capitalized)",
-                                logo:"https://i.postimg.cc/RhNBVsck/SPEA.png"
-                            )
-                        )
-                        .padding(.bottom, 20)
-                    } else if isMember, membershipTypeBinding.wrappedValue == .lifetime {
-                        MembershipCardView(
-                            member: Membership(
-                                name: "\(membershipTypeBinding.wrappedValue.rawValue.capitalized) Membership",
-                                validity: "Lifetime Access",
-                                details: "Access to benefits.    Type: \(membershipTypeBinding.wrappedValue.rawValue.capitalized)",
-                                logo:"https://i.postimg.cc/RhNBVsck/SPEA.png"
-                            )
-                        )
-                        .padding(.bottom, 20)
+                    if isMember, let expiryDate = membershipExpiryDate, membershipType != .lifetime, expiryDate >= Date() {
+                        membershipCard(validity: "Valid Until: \(formattedDate(expiryDate))")
+                    } else if isMember, membershipType == .lifetime {
+                        membershipCard(validity: "Lifetime Access")
                     }
 
                     // Improved "Benefits" title
-                    VStack(spacing: 10) {
-                        Divider()
-                            .background(Color.gray)
-                        Text("Benefits")
-                            .font(.title2)
-                            .fontWeight(.semibold)
-                            .foregroundColor(.red)
-                            .padding(.horizontal)
-                        Divider()
-                            .background(Color.gray)
-                    }
-                    .padding(.vertical, 10)
-                    
+                    benefitsTitle()
+
                     List(viewModel.memberList) { member in
                         Button {
                             memberSelected = member
                         } label: {
-                            HStack {
-                                KFImage(URL(string: member.logo))
-                                    .resizable()
-                                    .placeholder { LoadingView() }
-                                    .onSuccess { result in print("Image loaded successfully: \(result.cacheType)") }
-                                    .onFailure { error in print("Failed to load image: \(error.localizedDescription)") }
-                                    .scaledToFit()
-                                    .frame(maxWidth: .infinity)
-                                    .clipShape(RoundedRectangle(cornerRadius: 10))
-                            }
+                            memberLogoView(logoURL: member.logo)
                         }
                     }
                     .opacity(viewModel.isLoading ? 0 : 1)
-                    
+
                     if viewModel.isLoading {
                         SmallAnimatedLoadingView()
                     }
@@ -109,42 +71,113 @@ struct MembershipView: View {
             .navigationTitle("Membership")
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
-                    Button {
-                        showingSettings = true
-                    } label: {
-                        Image(systemName: "gearshape")
-                    }
+                    Button { showingSettings = true } label: { Image(systemName: "gearshape") }
                 }
             }
             .sheet(isPresented: $showingSettings) {
                 MembershipSettingsView(
                     signUpDate: $signUpDate,
-                    membershipType: membershipTypeBinding,
+                    membershipType: Binding(
+                        get: { MembershipType(rawValue: membershipTypeRaw) ?? .student },
+                        set: { membershipTypeRaw = $0.rawValue }
+                    ),
                     isMember: $isMember,
                     membershipExpiryDateString: $membershipExpiryDateString
                 )
             }
             .sheet(item: $memberSelected) { member in
-                VStack(alignment: .leading) {
-                    Spacer()
-                    Text(member.name)
-                        .font(.largeTitle)
-                        .fontWeight(.bold)
-                        .padding()
-                    Divider()
-                    Text(member.validity)
-                        .padding()
-                    Text(member.details)
-                        .padding()
-                    Spacer()
-                }
-                .presentationDetents([.medium, .large], selection: $settingsDetent)
+                memberDetailsSheet(member: member)
             }
             .onAppear {
                 checkMembershipStatus()
-                scheduleExpiryWarningNotification() // Schedule the warning notification
+                scheduleExpiryWarningNotification()
             }
         }
+    }
+
+    private func membershipCard(validity: String) -> some View {
+        MembershipCardView(
+            member: Membership(
+                name: "\(membershipType.rawValue.capitalized) Membership",
+                validity: validity,
+                details: "Access to benefits.    Type: \(membershipType.rawValue.capitalized)",
+                logo:"https://i.postimg.cc/jS0TCP35/SPEA-Without-Background.png"
+            )
+        )
+        .padding(.bottom, 20)
+    }
+
+    private func benefitsTitle() -> some View {
+        VStack(spacing: 10) {
+            Divider().background(Color.gray)
+            Text("Benefits")
+                .font(.title2)
+                .fontWeight(.semibold)
+                .foregroundColor(.red)
+                .padding(.horizontal)
+            Divider().background(Color.gray)
+        }
+        .padding(.vertical, 10)
+    }
+
+    private func memberLogoView(logoURL: String) -> some View {
+        KFImage(URL(string: logoURL))
+            .resizable()
+            .placeholder { LoadingView() }
+            .onSuccess { result in print("Image loaded successfully: \(result.cacheType)") }
+            .onFailure { error in print("Failed to load image: \(error.localizedDescription)") }
+            .scaledToFit()
+            .frame(maxWidth: .infinity)
+            .clipShape(RoundedRectangle(cornerRadius: 10))
+    }
+
+    private func memberDetailsSheet(member: Membership) -> some View {
+        VStack(alignment: .leading, spacing: 16) {
+                Spacer()
+                
+                // Membership Name
+                Text(member.name)
+                    .font(.largeTitle)
+                    .fontWeight(.bold)
+                    .padding([.horizontal, .top])
+                    .foregroundColor(.primary)
+                
+                Divider()
+                    .background(Color.gray)
+                    .padding(.horizontal)
+                
+                // Membership Validity
+                Text("Membership Validity")
+                    .font(.headline)
+                    .foregroundColor(.secondary)
+                    .padding(.horizontal)
+                
+                Text(member.validity)
+                    .font(.body)
+                    .padding([.horizontal, .bottom])
+                    .foregroundColor(.primary)
+                
+                Divider()
+                    .background(Color.gray)
+                    .padding(.horizontal)
+                
+                // Membership Details
+                Text("Membership Details")
+                    .font(.headline)
+                    .foregroundColor(.secondary)
+                    .padding(.horizontal)
+                
+                Text(member.details)
+                    .font(.body)
+                    .padding([.horizontal, .bottom])
+                    .foregroundColor(.primary)
+                    .lineSpacing(5)
+                    .multilineTextAlignment(.leading)
+                
+                Spacer()
+            }
+            .presentationDetents([.medium, .large], selection: $settingsDetent)
+            .background(Color(UIColor.systemBackground))
     }
 
     private func checkMembershipStatus() {
@@ -168,40 +201,23 @@ struct MembershipView: View {
             }
         }
     }
-    
+
     private func scheduleExpiryWarningNotification() {
-        guard isMember, let expiryDate = membershipExpiryDate, membershipTypeBinding.wrappedValue != .lifetime else { return }
+        guard isMember, let expiryDate = membershipExpiryDate, membershipType != .lifetime else { return }
 
         let content = UNMutableNotificationContent()
         content.title = "Membership Expiring Soon"
         content.body = "Your membership is expiring soon. Please renew to continue enjoying benefits."
         content.sound = UNNotificationSound.default
 
-        // Schedule the notification for 7 days before the expiry date
-        if let warningDate = Calendar.current.date(byAdding: .day, value: -7, to: expiryDate) {
-            let timeInterval = warningDate.timeIntervalSinceNow
-            if timeInterval > 0 {
-                let trigger = UNTimeIntervalNotificationTrigger(timeInterval: timeInterval, repeats: false)
-                let request = UNNotificationRequest(identifier: UUID().uuidString, content: content, trigger: trigger)
+        if let warningDate = Calendar.current.date(byAdding: .day, value: -7, to: expiryDate), warningDate.timeIntervalSinceNow > 0 {
+            let trigger = UNTimeIntervalNotificationTrigger(timeInterval: warningDate.timeIntervalSinceNow, repeats: false)
+            let request = UNNotificationRequest(identifier: UUID().uuidString, content: content, trigger: trigger)
 
-                UNUserNotificationCenter.current().add(request) { error in
-                    if let error = error {
-                        print("Error scheduling warning notification: \(error.localizedDescription)")
-                    }
+            UNUserNotificationCenter.current().add(request) { error in
+                if let error = error {
+                    print("Error scheduling warning notification: \(error.localizedDescription)")
                 }
-            }
-        }
-    }
-
-    private func requestNotificationPermissions() {
-        UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound, .badge]) { granted, error in
-            if let error = error {
-                print("Error requesting notification permissions: \(error.localizedDescription)")
-            }
-            if granted {
-                print("Notification permissions granted.")
-            } else {
-                print("Notification permissions denied.")
             }
         }
     }
@@ -210,16 +226,6 @@ struct MembershipView: View {
         let formatter = DateFormatter()
         formatter.dateStyle = .medium
         return formatter.string(from: date)
-    }
-
-    private func updateMembershipExpiryDate() {
-        if membershipTypeBinding.wrappedValue != .lifetime {
-            if let updatedExpiryDate = Calendar.current.date(byAdding: .year, value: 5, to: signUpDate) {
-                membershipExpiryDateString = ISO8601DateFormatter().string(from: updatedExpiryDate)
-            }
-        } else {
-            membershipExpiryDateString = ""
-        }
     }
 }
 
@@ -232,22 +238,46 @@ struct MembershipCardView: View {
                 KFImage(URL(string: member.logo))
                     .resizable()
                     .scaledToFit()
-                    .frame(width: 60, height: 60)
-                    .clipShape(RoundedRectangle(cornerRadius: 12))
-                
+                    .frame(width: 70, height: 45)
+                    .cornerRadius(5) // Apply rounded corners directly with cornerRadius
+
                 Spacer()
 
-                VStack(alignment: .leading) {
+                VStack(alignment: .leading, spacing: 5) {
                     Text(member.name)
                         .font(.title2)
                         .fontWeight(.bold)
                         .foregroundColor(.white)
-                    
+
                     Text(member.validity)
                         .foregroundColor(.white)
                         .font(.subheadline)
                 }
             }
+            .padding(.bottom, 10)
+
+            Divider()
+                .background(Color.white)
+
+            Text("Benefits")
+                .font(.headline)
+                .foregroundColor(.white)
+                .padding(.bottom, 5)
+
+            VStack(alignment: .leading, spacing: 5) {
+                ForEach(memberBenefits(), id: \.self) { benefit in
+                    HStack(alignment: .top) {
+                        Image(systemName: "checkmark.circle.fill")
+                            .foregroundColor(.green)
+                            .font(.system(size: 18, weight: .semibold))
+
+                        Text(benefit)
+                            .foregroundColor(.white)
+                            .font(.body)
+                    }
+                }
+            }
+            .padding(.leading, 10)
 
             Divider()
                 .background(Color.white)
@@ -269,6 +299,16 @@ struct MembershipCardView: View {
         .cornerRadius(15)
         .shadow(radius: 10)
         .padding(.horizontal)
+    }
+
+    private func memberBenefits() -> [String] {
+        return [
+            "Access to exclusive events",
+            "Priority support",
+            "Special discounts",
+            "Networking opportunities",
+            "Free resources and tools"
+        ]
     }
 }
 
