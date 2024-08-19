@@ -26,9 +26,12 @@
 		3CFA9F382C3BE87700B07E95 /* AnnouncementView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3CFA9F372C3BE87700B07E95 /* AnnouncementView.swift */; };
 		3CFA9F3A2C3BE88600B07E95 /* EventsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3CFA9F392C3BE88600B07E95 /* EventsView.swift */; };
 		3CFA9F3C2C3BE88D00B07E95 /* MembershipView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3CFA9F3B2C3BE88D00B07E95 /* MembershipView.swift */; };
+		DF1000BA2C70481F000525DE /* NetworkMonitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF1000B92C70481F000525DE /* NetworkMonitor.swift */; };
 		DF6182AE2C64994A005A3E83 /* EventViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF6182AD2C64994A005A3E83 /* EventViewModel.swift */; };
 		DF6182B42C649D61005A3E83 /* AnnouncementViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF6182B32C649D61005A3E83 /* AnnouncementViewModel.swift */; };
 		DF6182B72C649EC9005A3E83 /* MembershipViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF6182B62C649EC9005A3E83 /* MembershipViewModel.swift */; };
+		DFEE1F192C6F4BEF00E8BB80 /* FirstTimeLaunchView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DFEE1F182C6F4BEF00E8BB80 /* FirstTimeLaunchView.swift */; };
+		DFEE1F1F2C6F549100E8BB80 /* MembershipSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DFEE1F1E2C6F549100E8BB80 /* MembershipSettingsView.swift */; };
 		DFFD5AB52C638F8200538CA6 /* MembershipService.swift in Sources */ = {isa = PBXBuildFile; fileRef = DFFD5AB42C638F8200538CA6 /* MembershipService.swift */; };
 		DFFD5ABD2C63A5D200538CA6 /* SmallAnimatedLoadingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DFFD5ABC2C63A5D200538CA6 /* SmallAnimatedLoadingView.swift */; };
 /* End PBXBuildFile section */
@@ -50,9 +53,12 @@
 		3CFA9F372C3BE87700B07E95 /* AnnouncementView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnnouncementView.swift; sourceTree = "<group>"; };
 		3CFA9F392C3BE88600B07E95 /* EventsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventsView.swift; sourceTree = "<group>"; };
 		3CFA9F3B2C3BE88D00B07E95 /* MembershipView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MembershipView.swift; sourceTree = "<group>"; };
+		DF1000B92C70481F000525DE /* NetworkMonitor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkMonitor.swift; sourceTree = "<group>"; };
 		DF6182AD2C64994A005A3E83 /* EventViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventViewModel.swift; sourceTree = "<group>"; };
 		DF6182B32C649D61005A3E83 /* AnnouncementViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnnouncementViewModel.swift; sourceTree = "<group>"; };
 		DF6182B62C649EC9005A3E83 /* MembershipViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = MembershipViewModel.swift; path = ../MembershipViewModel.swift; sourceTree = "<group>"; };
+		DFEE1F182C6F4BEF00E8BB80 /* FirstTimeLaunchView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirstTimeLaunchView.swift; sourceTree = "<group>"; };
+		DFEE1F1E2C6F549100E8BB80 /* MembershipSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MembershipSettingsView.swift; sourceTree = "<group>"; };
 		DFFD5AB42C638F8200538CA6 /* MembershipService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MembershipService.swift; sourceTree = "<group>"; };
 		DFFD5ABC2C63A5D200538CA6 /* SmallAnimatedLoadingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SmallAnimatedLoadingView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -106,6 +112,8 @@
 				3CC9400F2C68C6DB00D572BC /* GoogleService-Info.plist */,
 				3CFA9F272C3BE84B00B07E95 /* SPEAApp.swift */,
 				3CFA9F292C3BE84B00B07E95 /* ContentView.swift */,
+				DFEE1F182C6F4BEF00E8BB80 /* FirstTimeLaunchView.swift */,
+				DF1000B92C70481F000525DE /* NetworkMonitor.swift */,
 				3CFA9F352C3BE86E00B07E95 /* FeedView.swift */,
 				DF6182AC2C649917005A3E83 /* Announcements */,
 				DF6182AB2C6498F7005A3E83 /* Events */,
@@ -149,6 +157,7 @@
 			isa = PBXGroup;
 			children = (
 				3CFA9F3B2C3BE88D00B07E95 /* MembershipView.swift */,
+				DFEE1F1E2C6F549100E8BB80 /* MembershipSettingsView.swift */,
 				DFFD5AB42C638F8200538CA6 /* MembershipService.swift */,
 				DF6182B62C649EC9005A3E83 /* MembershipViewModel.swift */,
 			);
@@ -249,11 +258,13 @@
 			buildActionMask = 2147483647;
 			files = (
 				3CFA9F3C2C3BE88D00B07E95 /* MembershipView.swift in Sources */,
+				DFEE1F192C6F4BEF00E8BB80 /* FirstTimeLaunchView.swift in Sources */,
 				3C6C21BE2C50E28000B5A637 /* DataServiceA.swift in Sources */,
 				3C6C21BA2C4E53F800B5A637 /* DataService.swift in Sources */,
 				3CA0BF252C6201250020A843 /* LoadingView.swift in Sources */,
 				3CFA9F2A2C3BE84B00B07E95 /* ContentView.swift in Sources */,
 				3CFA9F3A2C3BE88600B07E95 /* EventsView.swift in Sources */,
+				DF1000BA2C70481F000525DE /* NetworkMonitor.swift in Sources */,
 				DF6182B72C649EC9005A3E83 /* MembershipViewModel.swift in Sources */,
 				3CFA9F362C3BE86E00B07E95 /* FeedView.swift in Sources */,
 				DF6182B42C649D61005A3E83 /* AnnouncementViewModel.swift in Sources */,
@@ -263,6 +274,7 @@
 				DF6182AE2C64994A005A3E83 /* EventViewModel.swift in Sources */,
 				DFFD5ABD2C63A5D200538CA6 /* SmallAnimatedLoadingView.swift in Sources */,
 				DFFD5AB52C638F8200538CA6 /* MembershipService.swift in Sources */,
+				DFEE1F1F2C6F549100E8BB80 /* MembershipSettingsView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -18,12 +18,12 @@ class AnnouncementViewModel: ObservableObject {
     }
     
     func loadAnnouncements() {
-            dataService.loadAnnouncements { [weak self] loadedAnnouncements in
+        dataService.loadAnnouncements { [weak self] loadedAnnouncements in
+            DispatchQueue.main.async {
                 self?.announcementList = loadedAnnouncements
-                self?.isLoading = false  // Hide the loading view once data is loaded
-                print("Updated announcement list: \(self?.announcementList ?? [])") // Debug print
+                self?.isLoading = false
                 self?.announcementList.reverse()
             }
         }
-
+    }
 }
