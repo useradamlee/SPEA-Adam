@@ -100,7 +100,7 @@ struct MembershipView: View {
             member: Membership(
                 name: "\(membershipType.rawValue.capitalized) Membership",
                 validity: validity,
-                details: "Access to benefits.    Type: \(membershipType.rawValue.capitalized)",
+                details: "Access to benefits.",
                 logo:"https://i.postimg.cc/jS0TCP35/SPEA-Without-Background.png"
             )
         )
@@ -304,7 +304,6 @@ struct MembershipCardView: View {
     private func memberBenefits() -> [String] {
         return [
             "Access to exclusive events",
-            "Priority support",
             "Special discounts",
             "Networking opportunities",
             "Free resources and tools"
