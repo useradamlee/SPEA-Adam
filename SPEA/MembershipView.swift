@@ -50,10 +50,7 @@ struct MembershipView: View {
                     } else if isMember, membershipType == .lifetime {
                         membershipCard(validity: "Lifetime Access")
                     }
-
-                    // Improved "Benefits" title
-                    benefitsTitle()
-
+                    Section(header: Text("Membership Information")){
                     List(viewModel.memberList) { member in
                         Button {
                             memberSelected = member
@@ -61,6 +58,8 @@ struct MembershipView: View {
                             memberLogoView(logoURL: member.logo)
                         }
                     }
+                }
+
                     .opacity(viewModel.isLoading ? 0 : 1)
 
                     if viewModel.isLoading {
@@ -107,19 +106,6 @@ struct MembershipView: View {
             )
         )
         .padding(.bottom, 20)
-    }
-
-    private func benefitsTitle() -> some View {
-        VStack(spacing: 10) {
-            Divider().background(Color.gray)
-            Text("Benefits")
-                .font(.title2)
-                .fontWeight(.semibold)
-                .foregroundColor(.red)
-                .padding(.horizontal)
-            Divider().background(Color.gray)
-        }
-        .padding(.vertical, 10)
     }
 
     private func memberLogoView(logoURL: String) -> some View {
@@ -315,15 +301,4 @@ struct MembershipCardView: View {
 
 #Preview {
     MembershipView()
-}
-
-#Preview {
-    MembershipCardView(member: Membership(
-        name: "Gold Membership",
-        validity: "Valid Until: Aug 15, 2025",
-        details: "Access to premium features and more benefits.",
-        logo: "https://i.postimg.cc/RhNBVsck/SPEA.png"
-    ))
-    .previewLayout(.sizeThatFits)
-    .padding()
 }
