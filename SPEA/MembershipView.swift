@@ -44,13 +44,16 @@ struct MembershipView: View {
     var body: some View {
         NavigationStack {
             ZStack {
-                VStack {
+                VStack (alignment: .leading){
                     if isMember, let expiryDate = membershipExpiryDate, membershipType != .lifetime, expiryDate >= Date() {
                         membershipCard(validity: "Valid Until: \(formattedDate(expiryDate))")
                     } else if isMember, membershipType == .lifetime {
                         membershipCard(validity: "Lifetime Access")
                     }
-                    Section(header: Text("Membership Information")){
+                    Text("Benefits")
+                        .fontWeight(.bold)
+                        .padding()
+                        .font(.title3)
                     List(viewModel.memberList) { member in
                         Button {
                             memberSelected = member
@@ -58,7 +61,6 @@ struct MembershipView: View {
                             memberLogoView(logoURL: member.logo)
                         }
                     }
-                }
 
                     .opacity(viewModel.isLoading ? 0 : 1)
 
@@ -96,18 +98,21 @@ struct MembershipView: View {
         }
     }
 
+    @State private var isCardExpanded = false
+
     private func membershipCard(validity: String) -> some View {
         MembershipCardView(
             member: Membership(
                 name: "\(membershipType.rawValue.capitalized) Membership",
                 validity: validity,
                 details: "Access to benefits.",
-                logo:"https://i.postimg.cc/jS0TCP35/SPEA-Without-Background.png"
-            )
+                logo: "https://i.postimg.cc/jS0TCP35/SPEA-Without-Background.png"
+            ),
+            isExpanded: $isCardExpanded
         )
         .padding(.bottom, 20)
     }
-
+    
     private func memberLogoView(logoURL: String) -> some View {
         KFImage(URL(string: logoURL))
             .resizable()
@@ -219,6 +224,7 @@ struct MembershipView: View {
 
 struct MembershipCardView: View {
     let member: Membership
+    @Binding var isExpanded: Bool
 
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
@@ -227,7 +233,7 @@ struct MembershipCardView: View {
                     .resizable()
                     .scaledToFit()
                     .frame(width: 70, height: 45)
-                    .cornerRadius(5) // Apply rounded corners directly with cornerRadius
+                    .cornerRadius(5)
 
                 Spacer()
 
@@ -241,40 +247,49 @@ struct MembershipCardView: View {
                         .foregroundColor(.white)
                         .font(.subheadline)
                 }
+
+                Image(systemName: isExpanded ? "chevron.up" : "chevron.down")
+                    .foregroundColor(.white)
+                    .padding(.leading, 10)
             }
             .padding(.bottom, 10)
+            .onTapGesture {
+                withAnimation { isExpanded.toggle() }
+            }
 
-            Divider()
-                .background(Color.white)
+            if isExpanded {
+                Divider()
+                    .background(Color.white)
 
-            Text("Benefits")
-                .font(.headline)
-                .foregroundColor(.white)
-                .padding(.bottom, 5)
+                Text("Benefits")
+                    .font(.headline)
+                    .foregroundColor(.white)
+                    .padding(.bottom, 5)
 
-            VStack(alignment: .leading, spacing: 5) {
-                ForEach(memberBenefits(), id: \.self) { benefit in
-                    HStack(alignment: .top) {
-                        Image(systemName: "checkmark.circle.fill")
-                            .foregroundColor(.green)
-                            .font(.system(size: 18, weight: .semibold))
+                VStack(alignment: .leading, spacing: 5) {
+                    ForEach(memberBenefits(), id: \.self) { benefit in
+                        HStack(alignment: .top) {
+                            Image(systemName: "checkmark.circle.fill")
+                                .foregroundColor(.green)
+                                .font(.system(size: 18, weight: .semibold))
 
-                        Text(benefit)
-                            .foregroundColor(.white)
-                            .font(.body)
+                            Text(benefit)
+                                .foregroundColor(.white)
+                                .font(.body)
+                        }
                     }
                 }
+                .padding(.leading, 10)
+
+                Divider()
+                    .background(Color.white)
+
+                Text(member.details)
+                    .foregroundColor(.white)
+                    .font(.body)
+                    .lineLimit(isExpanded ? nil : 3)
+                    .minimumScaleFactor(0.8)
             }
-            .padding(.leading, 10)
-
-            Divider()
-                .background(Color.white)
-
-            Text(member.details)
-                .foregroundColor(.white)
-                .font(.body)
-                .lineLimit(3)
-                .minimumScaleFactor(0.8)
         }
         .padding()
         .background(

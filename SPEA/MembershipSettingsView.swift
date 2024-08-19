@@ -13,6 +13,7 @@ struct MembershipSettingsView: View {
     @Binding var isMember: Bool
     @Binding var membershipExpiryDateString: String
     @State private var isSavePressed = false
+    @State private var showDeleteConfirmation = false
     @Environment(\.dismiss) private var dismiss
 
     var body: some View {
@@ -54,6 +55,27 @@ struct MembershipSettingsView: View {
             .accessibility(label: Text("Complete Sign-Up"))
 
             Section(footer: importantInformationView()) {}
+
+            if hasInformationToDelete {
+                Button(action: {
+                    showDeleteConfirmation = true
+                }) {
+                    HStack {
+                        Image(systemName: "trash")
+                        Text("Delete Membership")
+                    }
+                }
+                .foregroundColor(.red)
+                .padding()
+                .alert("Are you sure you want to delete this membership?", isPresented: $showDeleteConfirmation) {
+                    Button("Delete", role: .destructive) {
+                        deleteMembership()
+                    }
+                    Button("Cancel", role: .cancel) { }
+                } message: {
+                    Text("This action cannot be undone.")
+                }
+            }
         }
         .navigationTitle("Edit Membership")
         .toolbar {
@@ -104,6 +126,25 @@ struct MembershipSettingsView: View {
 
         // Dismiss the view
         dismiss()
+    }
+
+    private func deleteMembership() {
+        // Reset the membership information
+        isMember = false
+        signUpDate = Date()
+        membershipType = .student // Reset to a default type if needed
+        membershipExpiryDateString = ""
+
+        // Optionally clear saved data in UserDefaults
+        UserDefaults.standard.removeObject(forKey: "membershipTypeRaw")
+
+        // Dismiss the view after deletion
+        dismiss()
+    }
+
+    private var hasInformationToDelete: Bool {
+        // Determine if there is membership information to delete
+        return isMember || !membershipExpiryDateString.isEmpty || membershipType != .student
     }
 }
 
