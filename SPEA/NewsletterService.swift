@@ -11,6 +11,8 @@ struct NewsletterResponse: Codable {
     let newsletters: [Newsletter]
 }
 
+// MARK: - Services
+
 class NewsletterService {
     private let apiUrl = "https://script.google.com/macros/s/AKfycbx8CoHXCBrO8TwOTUHpTzO3Gec5wOznaqRuuexABqUOalZRGP28UfLdUu4LEmQZLeQ/exec"
     private let jsonDecoder = JSONDecoder()
@@ -65,5 +67,3 @@ class NewsletterService {
         return response.newsletters
     }
 }
-
-

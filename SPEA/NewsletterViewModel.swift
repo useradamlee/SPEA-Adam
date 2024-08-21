@@ -12,6 +12,7 @@ class NewsletterViewModel: ObservableObject {
     @Published var newsletters: [Newsletter] = []
     @Published var isLoading: Bool = false
     @Published var errorMessage: String?
+    @Published var isUsingCachedData: Bool = false
 
     private let newsletterService = NewsletterService()
 
@@ -25,8 +26,27 @@ class NewsletterViewModel: ObservableObject {
                 switch result {
                 case .success(let newsletters):
                     self?.newsletters = newsletters.reversed() // Reverse to display the latest first
+                    self?.isUsingCachedData = false
                 case .failure(let error):
                     self?.errorMessage = "Failed to load newsletters: \(error.localizedDescription)"
+                    self?.loadCachedNewsletters()
+                }
+            }
+        }
+    }
+    
+    private func loadCachedNewsletters() {
+        let cachedNewsletters: () = newsletterService.loadNewsletters(useCache: true) { [weak self] result in
+            DispatchQueue.main.async {
+                switch result {
+                case .success(let newsletters):
+                    if !newsletters.isEmpty {
+                        self?.newsletters = newsletters.reversed()
+                        self?.isUsingCachedData = true
+                    }
+                case .failure:
+                    // If loading cached newsletters fails, we've already set an error message
+                    break
                 }
             }
         }
@@ -36,7 +56,6 @@ class NewsletterViewModel: ObservableObject {
 class NewsletterDetailViewModel: ObservableObject {
     @Published var cachedTexts: [String: [String]] = [:]
     var sections: [NewsletterSection] = []
-
 
     func cacheText(for newsletter: Newsletter) {
         guard cachedTexts[newsletter.id] == nil else { return }
