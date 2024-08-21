@@ -554,6 +554,7 @@ enum SectionType: String, CaseIterable {
     }
 }
 
+// MARK: - Preview
 
 #Preview {
     FeedView()

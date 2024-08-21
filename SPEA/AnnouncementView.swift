@@ -80,6 +80,8 @@
  */
 import SwiftUI
 
+// MARK: - Models
+
 // Model for individual announcement data
 struct Announcement: Identifiable, Codable {
     var id = UUID()
@@ -95,6 +97,8 @@ struct Announcement: Identifiable, Codable {
         case description
     }
 }
+
+// MARK: - Views
 
 struct AnnouncementView: View {
     @StateObject private var viewModel = AnnouncementViewModel()
@@ -199,6 +203,8 @@ struct AnnouncementDetailView: View {
         .padding()
     }
 }
+
+// MARK: - Preview
 
 #Preview {
     AnnouncementView()

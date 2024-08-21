@@ -266,6 +266,8 @@ struct EventDetailView: View {
     }
 }
 
+// MARK: - Previews
+
 #Preview {
     EventsView()
         .previewLayout(.sizeThatFits)
