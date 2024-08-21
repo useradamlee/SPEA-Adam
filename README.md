@@ -7,7 +7,7 @@ If the person says no, they will be directed to the app's main page. With the op
 
 2. **Newsletters:** 
 Recently updated to allow remote changes.
-For the newer newsletters, it will show the newsletter sections with the ability to enter the link to that specific section (in a website).
+The newer newsletters will show the newsletter sections with the ability to enter the link to that specific section (in a website).
 For the older newsletters, since it is a pdf file, swiftui will get the link and with pdfkit, it will make it a viewable pdf file inside the app.
 4. **Events, announcements and membership benefits:**
 This is a bit more complicated, but it simply works with a list. 
@@ -16,9 +16,9 @@ It gets data from a Google sheet
 From the Google sheet, it is converted into a JSON file using Google App Scripts. App Scripts will then provide a web app link to the JSON formatted data.
 I then can use the link and decode it in the app. After formatting the data, it will be shown in a list.
 5. **Caching:**
-Caching is used for most of the app, especially for the parts that get data from the Google sheet.
+Caching is used for most parts of the app, especially for the parts that get data from the Google sheet.
 It will cache the data for the text and the image.
-Now, it will also cache the pdf file, so that it loads faster and reduces the fetching of the api
+Now, it will also cache the pdf file so that it loads faster and reduces the fetching of the API.
 **How does it cache the image?** 
 It caches the images through [KingFisher](https://github.com/onevcat/Kingfisher). Firstly, the images are web-hosted, and the direct link is put in the Google sheet. After all the processes, the app will get the images through the links, cache them and store them.
 
