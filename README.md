@@ -7,7 +7,7 @@ If the person says no, they will be directed to the app's main page. With the op
 
 2. **Newsletters:** 
 Recently updated to allow remote changes.
-For the newer newsletters, it will show the sections of the newsletter with the ability to enter the link to that specific section (in a website)
+For the newer newsletters, it will show the newsletter sections with the ability to enter the link to that specific section (in a website).
 For the older newsletters, since it is a pdf file, swiftui will get the link and with pdfkit, it will make it a viewable pdf file inside the app.
 4. **Events, announcements and membership benefits:**
 This is a bit more complicated, but it simply works with a list. 
