@@ -141,19 +141,19 @@ struct Newsletter: Codable, Identifiable {
     let subtitle: String?
     let coverImage: String
     let pdfLink: String?
-    let sections: [Section]?
+    let sections: [NewsletterSection]?
     let feedbackEmail: String?
     let membershipLink: String?
 }
 
-struct Section: Codable, Identifiable {
+struct NewsletterSection: Codable, Identifiable {
     let sectionId: String
     let sectionType: String
     let title: String
     let content: String
     let link: String?
     let authors: String?
-    
+
     var id: String { sectionId }
 }
 
@@ -162,6 +162,7 @@ struct Section: Codable, Identifiable {
 class PDFCache {
     static let shared = PDFCache()
     private var cache: [URL: PDFDocument] = [:]
+    var cacheLimit: Int = 10 // Default limit on cached items
     
     private init() {}
     
@@ -170,26 +171,54 @@ class PDFCache {
     }
     
     func setDocument(_ document: PDFDocument, for url: URL) {
+        if cache.count >= cacheLimit {
+            // Remove the oldest cached item to make space
+            if let firstKey = cache.keys.first {
+                cache.removeValue(forKey: firstKey)
+            }
+        }
         cache[url] = document
+    }
+    
+    func clearCache() {
+        cache.removeAll()
+    }
+    
+    func updateCacheLimit(to newLimit: Int) {
+        cacheLimit = newLimit
+        // If the new limit is lower, trim the cache to match the limit
+        while cache.count > cacheLimit {
+            if let firstKey = cache.keys.first {
+                cache.removeValue(forKey: firstKey)
+            }
+        }
     }
 }
 
+
+
 // MARK: - Identifiable Wrapper
 
-struct PDFURLWrapper: Identifiable {
+struct PDFURLWrapper: Identifiable, Equatable {
     let id: UUID
     let url: URL
-    
+
     init(url: URL) {
         self.id = UUID()
         self.url = url
     }
+
+    static func == (lhs: PDFURLWrapper, rhs: PDFURLWrapper) -> Bool {
+        lhs.url == rhs.url
+    }
 }
+
 
 // MARK: - Views
 
 struct PDFViewer: UIViewRepresentable {
     let pdfURL: URL
+    let preloadedDocument: PDFDocument?
 
     func makeUIView(context: Context) -> PDFView {
         let pdfView = PDFView()
@@ -198,22 +227,18 @@ struct PDFViewer: UIViewRepresentable {
     }
 
     func updateUIView(_ uiView: PDFView, context: Context) {
-        if let cachedDocument = PDFCache.shared.document(for: pdfURL) {
-            uiView.document = cachedDocument
+        if let preloadedDocument = preloadedDocument {
+            uiView.document = preloadedDocument
         } else {
             DispatchQueue.global(qos: .userInitiated).async {
-                if let document = PDFDocument(url: pdfURL) {
-                    PDFCache.shared.setDocument(document, for: pdfURL)
-                    DispatchQueue.main.async {
-                        uiView.document = document
-                    }
+                let document = PDFDocument(url: pdfURL)
+                DispatchQueue.main.async {
+                    uiView.document = document
                 }
             }
         }
     }
 }
-
-
 
 struct FeedView: View {
     @StateObject private var viewModel = NewsletterViewModel()
@@ -222,6 +247,8 @@ struct FeedView: View {
     @State private var showReconnectedMessage = false
     @State private var selectedPDFURLWrapper: PDFURLWrapper? = nil
     @State private var selectedNewsletter: Newsletter? = nil
+    @State private var isLoadingPDF = false
+    @State private var preloadedPDFDocument: PDFDocument? = nil
 
     private var selectedPDFURL: Binding<URL?> {
         Binding<URL?>(
@@ -234,7 +261,7 @@ struct FeedView: View {
 
     private let columns = [
         GridItem(.flexible(), spacing: 16),
-        GridItem(.flexible(), spacing: 8)
+        GridItem(.flexible(), spacing: 16)
     ]
 
     var body: some View {
@@ -244,16 +271,16 @@ struct FeedView: View {
                     if !networkMonitor.isConnected {
                         offlineMessage
                     }
-
+                    
                     if showReconnectedMessage && networkMonitor.isConnected {
                         reconnectedMessage
                     }
-
+                    
                     content
                 }
                 .navigationTitle("Newsletter")
                 .sheet(item: $selectedPDFURLWrapper) { wrapper in
-                    PDFViewer(pdfURL: wrapper.url)
+                    PDFViewer(pdfURL: wrapper.url, preloadedDocument: preloadedPDFDocument)
                 }
                 .sheet(item: $selectedNewsletter) { newsletter in
                     NewsletterDetailView(newsletter: newsletter, detailViewModel: detailViewModel)
@@ -267,9 +294,44 @@ struct FeedView: View {
                     }
                 }
             }
+            .toolbar { // Ensure the toolbar is only defined here, outside the Group
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    NavigationLink(destination: SettingsView()) {
+                        Image(systemName: "gearshape")
+                            .accessibilityLabel("Settings")
+                    }
+                }
+            }
         }
         .onAppear {
             viewModel.fetchNewsletters()
+        }
+        .onChange(of: selectedPDFURLWrapper) {
+            if let newWrapper = selectedPDFURLWrapper {
+                preloadPDFDocument(from: newWrapper.url)
+            }
+        }
+    }
+
+    private func preloadPDFDocument(from url: URL) {
+        if let cachedDocument = PDFCache.shared.document(for: url) {
+            preloadedPDFDocument = cachedDocument
+            isLoadingPDF = false
+        } else {
+            isLoadingPDF = true
+            DispatchQueue.global(qos: .userInitiated).async {
+                if let document = PDFDocument(url: url) {
+                    PDFCache.shared.setDocument(document, for: url)
+                    DispatchQueue.main.async {
+                        preloadedPDFDocument = document
+                        isLoadingPDF = false
+                    }
+                } else {
+                    DispatchQueue.main.async {
+                        isLoadingPDF = false
+                    }
+                }
+            }
         }
     }
 
@@ -295,9 +357,9 @@ struct FeedView: View {
                 DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
                     withAnimation {
                         showReconnectedMessage = false
+                    }
                 }
             }
-        }
     }
 
     private var content: some View {
@@ -353,13 +415,13 @@ struct NewsletterCard: View {
                     }
                 }) {
                     KFImage(URL(string: newsletter.coverImage))
-                        .placeholder { ProgressView() }
                         .resizable()
                         .scaledToFit()
                         .frame(height: 150)
+                        .accessibilityLabel(Text("Cover image for \(newsletter.title)"))
                         .cornerRadius(12)
                 }
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                .frame(maxWidth: .infinity)
                 .padding(8)
                 .background(Color.white)
                 .cornerRadius(16)
@@ -385,6 +447,7 @@ struct NewsletterCard: View {
         }
     }
 }
+
 
 struct LargeNewsletterCard: View {
     var newsletter: Newsletter

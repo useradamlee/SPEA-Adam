@@ -35,7 +35,7 @@ class NewsletterViewModel: ObservableObject {
 
 class NewsletterDetailViewModel: ObservableObject {
     @Published var cachedTexts: [String: [String]] = [:]
-    var sections: [Section] = []
+    var sections: [NewsletterSection] = []
 
 
     func cacheText(for newsletter: Newsletter) {

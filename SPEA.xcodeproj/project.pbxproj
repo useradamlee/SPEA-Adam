@@ -28,6 +28,7 @@
 		3CFA9F3A2C3BE88600B07E95 /* EventsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3CFA9F392C3BE88600B07E95 /* EventsView.swift */; };
 		3CFA9F3C2C3BE88D00B07E95 /* MembershipView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3CFA9F3B2C3BE88D00B07E95 /* MembershipView.swift */; };
 		DF1000BA2C70481F000525DE /* NetworkMonitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF1000B92C70481F000525DE /* NetworkMonitor.swift */; };
+		DF4CE1042C75B90700AC60BC /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF4CE1032C75B90700AC60BC /* SettingsView.swift */; };
 		DF6182AE2C64994A005A3E83 /* EventViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF6182AD2C64994A005A3E83 /* EventViewModel.swift */; };
 		DF6182B42C649D61005A3E83 /* AnnouncementViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF6182B32C649D61005A3E83 /* AnnouncementViewModel.swift */; };
 		DF6182B72C649EC9005A3E83 /* MembershipViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF6182B62C649EC9005A3E83 /* MembershipViewModel.swift */; };
@@ -57,6 +58,7 @@
 		3CFA9F392C3BE88600B07E95 /* EventsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventsView.swift; sourceTree = "<group>"; };
 		3CFA9F3B2C3BE88D00B07E95 /* MembershipView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MembershipView.swift; sourceTree = "<group>"; };
 		DF1000B92C70481F000525DE /* NetworkMonitor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkMonitor.swift; sourceTree = "<group>"; };
+		DF4CE1032C75B90700AC60BC /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		DF6182AD2C64994A005A3E83 /* EventViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventViewModel.swift; sourceTree = "<group>"; };
 		DF6182B32C649D61005A3E83 /* AnnouncementViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnnouncementViewModel.swift; sourceTree = "<group>"; };
 		DF6182B62C649EC9005A3E83 /* MembershipViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = MembershipViewModel.swift; path = ../MembershipViewModel.swift; sourceTree = "<group>"; };
@@ -121,8 +123,8 @@
 				DFEE1F182C6F4BEF00E8BB80 /* FirstTimeLaunchView.swift */,
 				DF1000B92C70481F000525DE /* NetworkMonitor.swift */,
 				DF5643E82C7341AD00C72567 /* Newsletters */,
-				DF6182AC2C649917005A3E83 /* Announcements */,
 				DF6182AB2C6498F7005A3E83 /* Events */,
+				DF6182AC2C649917005A3E83 /* Announcements */,
 				DF6182B52C649DEC005A3E83 /* LoadingViews */,
 				DF6182AF2C649A75005A3E83 /* Memberships */,
 				3CFA9F2B2C3BE84D00B07E95 /* Assets.xcassets */,
@@ -143,6 +145,7 @@
 			isa = PBXGroup;
 			children = (
 				3CFA9F352C3BE86E00B07E95 /* FeedView.swift */,
+				DF4CE1032C75B90700AC60BC /* SettingsView.swift */,
 				DFE585B82C737263007EC1BC /* NewsletterService.swift */,
 				DFE585BA2C737289007EC1BC /* NewsletterViewModel.swift */,
 			);
@@ -274,6 +277,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				DF4CE1042C75B90700AC60BC /* SettingsView.swift in Sources */,
 				3CFA9F3C2C3BE88D00B07E95 /* MembershipView.swift in Sources */,
 				DFEE1F192C6F4BEF00E8BB80 /* FirstTimeLaunchView.swift in Sources */,
 				3C6C21BE2C50E28000B5A637 /* DataServiceA.swift in Sources */,
