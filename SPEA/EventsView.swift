@@ -117,7 +117,8 @@ struct Event: Identifiable, Codable {
 
 struct EventsView: View {
     @StateObject private var viewModel = EventViewModel()
-    @StateObject private var networkMonitor = NetworkMonitor() //Monitor network status
+    @StateObject private var networkMonitor = NetworkMonitor() // Monitor network status
+    @State private var showReconnectedMessage = false
 
     var body: some View {
         NavigationView {
@@ -130,8 +131,28 @@ struct EventsView: View {
                         .padding(.vertical, 4)
                         .frame(maxWidth: .infinity)
                         .background(Color.yellow.opacity(0.2))
+                        .transition(.opacity)
                 }
-                
+
+                // Show a temporary reconnected message when back online
+                if showReconnectedMessage && networkMonitor.isConnected {
+                    Text("You are back online.")
+                        .font(.footnote)
+                        .foregroundColor(.green)
+                        .padding(.vertical, 4)
+                        .frame(maxWidth: .infinity)
+                        .background(Color.green.opacity(0.2))
+                        .transition(.opacity)
+                        .onAppear {
+                            // Automatically hide the message after 2 seconds
+                            DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+                                withAnimation {
+                                    showReconnectedMessage = false
+                                }
+                            }
+                        }
+                }
+
                 // Event list with navigation links
                 List(viewModel.eventList) { event in
                     NavigationLink(destination: EventDetailView(event: event)) {
@@ -139,12 +160,20 @@ struct EventsView: View {
                     }
                 }
                 .navigationTitle("Events")
-                
+
                 // Loading view overlay
                 if viewModel.isLoading {
                     SmallAnimatedLoadingView()
                         .frame(width: 250, height: 200)
                         .cornerRadius(10)
+                }
+            }
+            .onChange(of: networkMonitor.isConnected) { oldValue, newValue in
+                if newValue {
+                    // When the connection is restored, show the reconnected message
+                    withAnimation {
+                        showReconnectedMessage = true
+                    }
                 }
             }
         }
