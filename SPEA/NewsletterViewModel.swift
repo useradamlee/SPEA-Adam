@@ -13,19 +13,33 @@ class NewsletterViewModel: ObservableObject {
     @Published var isLoading: Bool = false
     @Published var errorMessage: String?
     @Published var isUsingCachedData: Bool = false
-
+    
     private let newsletterService = NewsletterService()
-
+    private var cancellables = Set<AnyCancellable>()
+    @Published var isConnected: Bool = true
+    
+    init(networkMonitor: NetworkMonitor = NetworkMonitor()) {
+        networkMonitor.$isConnected
+            .receive(on: DispatchQueue.main)
+            .assign(to: \.isConnected, on: self)
+            .store(in: &cancellables)
+    }
+    
     func fetchNewsletters() {
         isLoading = true
         errorMessage = nil
+        
+        guard isConnected else {
+            loadCachedNewsletters()
+            return
+        }
         
         newsletterService.loadNewsletters { [weak self] result in
             DispatchQueue.main.async {
                 self?.isLoading = false
                 switch result {
                 case .success(let newsletters):
-                    self?.newsletters = newsletters.reversed() // Reverse to display the latest first
+                    self?.newsletters = newsletters.reversed()
                     self?.isUsingCachedData = false
                 case .failure(let error):
                     self?.errorMessage = "Failed to load newsletters: \(error.localizedDescription)"
@@ -35,8 +49,12 @@ class NewsletterViewModel: ObservableObject {
         }
     }
     
+    func reloadNewsletters() {
+        fetchNewsletters()
+    }
+    
     private func loadCachedNewsletters() {
-        let cachedNewsletters: () = newsletterService.loadNewsletters(useCache: true) { [weak self] result in
+        newsletterService.loadNewsletters(useCache: true) { [weak self] result in
             DispatchQueue.main.async {
                 switch result {
                 case .success(let newsletters):
@@ -45,13 +63,13 @@ class NewsletterViewModel: ObservableObject {
                         self?.isUsingCachedData = true
                     }
                 case .failure:
-                    // If loading cached newsletters fails, we've already set an error message
                     break
                 }
             }
         }
     }
 }
+
 
 class NewsletterDetailViewModel: ObservableObject {
     @Published var cachedTexts: [String: [String]] = [:]
