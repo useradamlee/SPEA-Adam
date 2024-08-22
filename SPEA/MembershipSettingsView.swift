@@ -18,7 +18,7 @@ struct MembershipSettingsView: View {
 
     var body: some View {
         Form {
-            Section(header: Text("Membership Information")) {
+            SwiftUI.Section(header: Text("Membership Information")) {
                 DatePicker("Sign-Up Date", selection: $signUpDate, displayedComponents: .date)
                     .padding()
 
@@ -54,7 +54,9 @@ struct MembershipSettingsView: View {
             .foregroundColor(.red)
             .accessibility(label: Text("Complete Sign-Up"))
 
-            Section(footer: importantInformationView()) {}
+            SwiftUI.Section {
+                importantInformationView()
+            }
 
             if hasInformationToDelete {
                 Button(action: {
@@ -95,7 +97,6 @@ struct MembershipSettingsView: View {
 
             VStack(alignment: .leading) {
                 Text("This is just to keep track of the deadline of the membership and not for official purposes.")
-
                 Link("To sign up, go here", destination: URL(string: "https://bit.ly/SPEA_Membership_Application_Form")!)
                     .font(.footnote)
                     .foregroundColor(.blue)
@@ -108,42 +109,33 @@ struct MembershipSettingsView: View {
     }
 
     private func completeSignUp() {
-        // Set isMember to true
         isMember = true
 
-        // Calculate and save expiry date for non-lifetime memberships
         if membershipType != .lifetime {
             if let expiryDate = Calendar.current.date(byAdding: .year, value: 5, to: signUpDate) {
                 membershipExpiryDateString = ISO8601DateFormatter().string(from: expiryDate)
             }
         } else {
-            // For lifetime membership, clear the expiry date
             membershipExpiryDateString = ""
         }
 
-        // Save membership type
         UserDefaults.standard.set(membershipType.rawValue, forKey: "membershipTypeRaw")
 
-        // Dismiss the view
         dismiss()
     }
 
     private func deleteMembership() {
-        // Reset the membership information
         isMember = false
         signUpDate = Date()
-        membershipType = .student // Reset to a default type if needed
+        membershipType = .student
         membershipExpiryDateString = ""
 
-        // Optionally clear saved data in UserDefaults
         UserDefaults.standard.removeObject(forKey: "membershipTypeRaw")
 
-        // Dismiss the view after deletion
         dismiss()
     }
 
     private var hasInformationToDelete: Bool {
-        // Determine if there is membership information to delete
         return isMember || !membershipExpiryDateString.isEmpty || membershipType != .student
     }
 }

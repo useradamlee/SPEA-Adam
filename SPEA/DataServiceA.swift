@@ -7,44 +7,57 @@
 
 import Foundation
 
-class DataServiceA {
+class DataServiceA: ObservableObject {
     let apiUrl = "https://script.google.com/macros/s/AKfycbwFjrOJA6NOStbmPVq1vdB1xcNbWTJ42uBBTEISX-h3DLJRamdhEATVnfm55CPlCg8z/exec"
     let jsonDecoder = JSONDecoder()
     
-    func loadAnnouncements(completion: @escaping ([Announcement]) -> Void) {
+    @Published var announcements: [Announcement] = [] // This is now a published property
+
+    func loadAnnouncements() {
         guard let url = URL(string: apiUrl) else {
             print("Invalid URL")
-            completion(loadCachedAnnouncements())
+            self.announcements = loadCachedAnnouncements()
             return
         }
         
-        // Load cached data if available before fetching from the network
-        completion(loadCachedAnnouncements())
+        // Load cached data first
+        self.announcements = loadCachedAnnouncements()
         
         URLSession.shared.dataTask(with: url) { data, response, error in
             if let error = error {
                 print("Error fetching data: \(error)")
-                completion(self.loadCachedAnnouncements()) // Fallback to cache if network fails
+                DispatchQueue.main.async {
+                    self.announcements = self.loadCachedAnnouncements() // Fallback to cache if network fails
+                }
                 return
             }
             
             guard let data = data else {
                 print("No data returned")
-                completion(self.loadCachedAnnouncements())
+                DispatchQueue.main.async {
+                    self.announcements = self.loadCachedAnnouncements()
+                }
                 return
             }
             
             do {
-                let announcements = try self.jsonDecoder.decode([Announcement].self, from: data)
+                let fetchedAnnouncements = try self.jsonDecoder.decode([Announcement].self, from: data)
                 DispatchQueue.main.async {
-                    self.cacheAnnouncements(announcements)
-                    completion(announcements)
+                    self.cacheAnnouncements(fetchedAnnouncements)
+                    self.announcements = fetchedAnnouncements
                 }
             } catch {
                 print("Error decoding JSON: \(error)")
-                completion(self.loadCachedAnnouncements())
+                DispatchQueue.main.async {
+                    self.announcements = self.loadCachedAnnouncements()
+                }
             }
         }.resume()
+    }
+    
+    func clearCache() {
+        UserDefaults.standard.removeObject(forKey: "cachedAnnouncements")
+        self.announcements = [] // Clear the announcements in memory
     }
     
     private func cacheAnnouncements(_ announcements: [Announcement]) {

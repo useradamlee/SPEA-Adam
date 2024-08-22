@@ -80,6 +80,8 @@
  */
 import SwiftUI
 
+// MARK: - Models
+
 // Model for individual announcement data
 struct Announcement: Identifiable, Codable {
     var id = UUID()
@@ -96,37 +98,70 @@ struct Announcement: Identifiable, Codable {
     }
 }
 
+// MARK: - Views
+
 struct AnnouncementView: View {
     @StateObject private var viewModel = AnnouncementViewModel()
     @StateObject private var networkMonitor = NetworkMonitor()
+    @State private var showReconnectedMessage = false
+    
     var body: some View {
-            NavigationView {
-                VStack {
-                    if !networkMonitor.isConnected {
-                        Text("You are offline. Content may not be up to date.")
-                            .font(.footnote)
-                            .foregroundColor(.red)
-                            .padding(.vertical, 4)
-                            .frame(maxWidth: .infinity)
-                            .background(Color.yellow.opacity(0.2))
-                    }
-                    
-                    List(viewModel.announcementList) { announcement in
-                        NavigationLink(destination: AnnouncementDetailView(announcement: announcement)) {
-                            AnnouncementRowView(announcement: announcement)
+        NavigationView {
+            VStack {
+                // Display the offline message when not connected
+                if !networkMonitor.isConnected {
+                    Text("You are offline. Content may not be up to date.")
+                        .font(.footnote)
+                        .foregroundColor(.red)
+                        .padding(.vertical, 4)
+                        .frame(maxWidth: .infinity)
+                        .background(Color.yellow.opacity(0.2))
+                        .transition(.opacity)
+                }
+                
+                // Display a temporary reconnected message when back online
+                if showReconnectedMessage && networkMonitor.isConnected {
+                    Text("You are back online.")
+                        .font(.footnote)
+                        .foregroundColor(.green)
+                        .padding(.vertical, 4)
+                        .frame(maxWidth: .infinity)
+                        .background(Color.green.opacity(0.2))
+                        .transition(.opacity)
+                        .onAppear {
+                            // Automatically dismiss the message after 2 seconds
+                            DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+                                withAnimation {
+                                    showReconnectedMessage = false
+                                }
+                            }
                         }
+                }
+                
+                List(viewModel.announcementList) { announcement in
+                    NavigationLink(destination: AnnouncementDetailView(announcement: announcement)) {
+                        AnnouncementRowView(announcement: announcement)
                     }
-                    .navigationTitle("Announcements")
-                    
-                    if viewModel.isLoading {
-                        SmallAnimatedLoadingView()
-                            .frame(width: 250, height: 200)
-                            .cornerRadius(10)
+                }
+                .navigationTitle("Announcements")
+                
+                if viewModel.isLoading {
+                    SmallAnimatedLoadingView()
+                        .frame(width: 250, height: 200)
+                        .cornerRadius(10)
+                }
+            }
+            .onChange(of: networkMonitor.isConnected) { oldValue, newValue in
+                if newValue {
+                    // When the connection is restored, show the reconnected message
+                    withAnimation {
+                        showReconnectedMessage = true
                     }
                 }
             }
         }
     }
+}
 
 struct AnnouncementRowView: View {
     var announcement: Announcement
@@ -168,6 +203,8 @@ struct AnnouncementDetailView: View {
         .padding()
     }
 }
+
+// MARK: - Preview
 
 #Preview {
     AnnouncementView()
