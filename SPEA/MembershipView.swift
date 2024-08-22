@@ -311,5 +311,5 @@ struct MembershipCardView: View {
 }
 
 #Preview {
-    MembershipView()
+MembershipView()
 }
