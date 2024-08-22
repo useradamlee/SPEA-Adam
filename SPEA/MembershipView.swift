@@ -50,10 +50,6 @@ struct MembershipView: View {
                     } else if isMember, membershipType == .lifetime {
                         membershipCard(validity: "Lifetime Access")
                     }
-                    Text("Benefits")
-                        .fontWeight(.bold)
-                        .padding()
-                        .font(.title3)
                     List(viewModel.memberList) { member in
                         Button {
                             memberSelected = member
