@@ -294,7 +294,7 @@ struct FeedView: View {
                     }
                 }
             }
-            .toolbar { // Ensure the toolbar is only defined here, outside the Group
+            .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
                     NavigationLink(destination: SettingsView()) {
                         Image(systemName: "gearshape")
@@ -336,13 +336,26 @@ struct FeedView: View {
     }
 
     private var offlineMessage: some View {
-        Text("You are offline. Content may not be up to date.")
-            .font(.footnote)
-            .foregroundColor(.red)
-            .padding(.vertical, 4)
-            .frame(maxWidth: .infinity)
-            .background(Color.yellow.opacity(0.2))
-            .transition(.opacity)
+        VStack {
+            Text("You are offline. Content may not be up to date.")
+                .font(.footnote)
+                .foregroundColor(.red)
+                .padding(.vertical, 4)
+                .frame(maxWidth: .infinity)
+                .background(Color.yellow.opacity(0.2))
+                .transition(.opacity)
+            
+            Button(action: {
+                viewModel.reloadNewsletters()
+            }) {
+                Text("Reload")
+                    .padding()
+                    .background(Color.red)
+                    .foregroundColor(.white)
+                    .cornerRadius(8)
+            }
+            .padding(.top, 8)
+        }
     }
 
     private var reconnectedMessage: some View {
