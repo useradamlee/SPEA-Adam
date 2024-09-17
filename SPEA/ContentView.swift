@@ -19,7 +19,7 @@ struct ContentView: View {
             } else {
                 // Main content view with TabView
                 TabView {
-                    FeedView()
+                    NewsletterView()
                         .tabItem {
                             Label("Newsletter", systemImage: "newspaper.fill")
                         }
