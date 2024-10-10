@@ -33,6 +33,7 @@ Lastly, if the content gets updated, the app will get rid of the changed content
 - [x] offline access
 - [x] sections of the newsletter in the app
 - [x] remote changes for newsletter
+- [ ] change CMS to contentful
 - [ ] home screen for app
 - [ ] walkthrough of app
 - [ ] Android version
